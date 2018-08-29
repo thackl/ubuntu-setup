@@ -6,9 +6,23 @@
 ## based on Dylan Taylor's template
 ## https://github.com/dylanmtaylor/dylan-ubuntu-makefile/blob/master/Makefile
 
-.PHONY: all preparations essentials archives perl feel looks perl R hub chrome graphics communication tools tex 
+.PHONY: all preparations essentials archives zsh fira feel tools hub perl R python chrome communication tex graphics looks
 
-all: basics
+all:
+	make preparations
+	make essentials
+	make archives
+	make fira
+	make feel
+	make tools
+	make hub
+	make perl
+	make R
+	make chrome
+	make communication
+	make tex
+	make graphics
+	make looks
 
 SOFTWARE=$(HOME)/software
 
@@ -23,24 +37,59 @@ preparations:
 
 essentials:
 	sudo apt -y install build-essential emacs elpa-async git wget curl openjdk-11-jdk\
-	 gparted openssh-server sshfs make dh-autoconf autoreconf
+	 gparted openssh-server sshfs make autoconf
 
 archives:
 	sudo apt -y install bzip2 pbzip2 unrar zip unzip
 
-communication:
-	sudo apt -y install thunderbird
-	#skype
-	cd /tmp && wget https://repo.skype.com/latest/skypeforlinux-64.deb && \
-	 sudo dpgk -i skypeforlinux-64.deb
-	#slack
-	cd /tmp && wget https://downloads.slack-edge.com/linux_releases/slack-desktop-3.2.1-amd64.deb \
-	sudo dpkg -i slack-desktop-3.2.1-amd64.deb
-	#bluejeans
+zsh:
+	sudo apt -y install zsh
+	cd /tmp && git clone https://github.com/thackl/zsh-setup.git &&\
+	cd zsh-setup && ./install.sh
+
+fira:
+	cd /tmp && git clone https://github.com/mozilla/Fira;\
+	sudo mkdir -p /usr/share/fonts/truetype/Fira && sudo cp Fira/ttf/* /usr/share/fonts/truetype/Fira;\
+	sudo mkdir -p /usr/share/fonts/opentype/Fira && sudo cp Fira/otf/* /usr/share/fonts/opentype/Fira;\
+	sudo fc-cache -fv
+	gsettings set org.gnome.desktop.interface document-font-name 'Fira Sans Regular 11'
+	gsettings set org.gnome.desktop.interface font-name 'Fira Sans Regular 11'
+	gsettings set org.gnome.desktop.interface monospace-font-name 'Noto Mono Regular 11'
+	gsettings set org.gnome.nautilus.desktop font 'Fira Sans Regular 11'
+
+
+LEGACY_KEYS=org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/
+
+feel:
+	# larger fonts
+	gsettings set org.gnome.desktop.interface text-scaling-factor '1.25'
+	# location of buttons in window bars
+	gsettings set org.gnome.desktop.wm.preferences button-layout 'close,maximize,minimize:'
+	# time with date
+	gsettings set org.gnome.desktop.interface clock-show-date true
+	# manipulate windows
+	gsettings set org.gnome.desktop.wm.keybindings move-to-monitor-left "['<Primary><Super>z']"
+	gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Primary><Super>w']"
+	gsettings set org.gnome.desktop.wm.keybindings maximize "['<Primary><Super>q']"
+	gsettings set org.gnome.desktop.wm.keybindings move-to-monitor-right "['<Primary><Super>x']"
+	gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Primary><Super>d', '<Primary><Alt>d', '<Super>d']"
+	gsettings set org.gnome.mutter.keybindings toggle-tiled-left "['<Primary><Super>a']"
+	gsettings set org.gnome.mutter.keybindings toggle-tiled-right "['<Primary><Super>s']"
+	# manipulate terminal tabs
+	gsettings set $(LEGACY_KEYS) prev-tab "'<Shift>Left'"
+	gsettings set $(LEGACY_KEYS) next-tab "'<Shift>Right'"
+	gsettings set $(LEGACY_KEYS) move-tab-left "'<Primary><Shift>Left'"
+	gsettings set $(LEGACY_KEYS) move-tab-right "'<Primary><Shift>Right'"
+	# color of dock indicator
+	gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-running-dots-color "#e8e8ef"
+	gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-running-dots-border-color "#e8e8ef"
+	# dual keyboard layout
+	gsettings set org.gnome.desktop.input-sources mru-sources "[('xkb', 'us'), ('xkb', 'de')]"
+	gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'de')]"
+	@echo Note: some modified gnome settings will only take effect after the next login
 
 tools:
-	sudo apt -y install pv keepassx vlc rename
-	# hub
+	sudo apt -y install pv keepassx vlc rename colordiff
 
 hub:
 	set -e; cd $(SOFTWARE) &&\
@@ -63,14 +112,30 @@ R:
 	Rversion=$$(tar -vtf R-latest.tar.gz | grep -om1 'R-.*$$') &&\
 	cd $$Rversion && ./configure --prefix=/tmp/foo && make && make install
 
+python:
+	sudo apt -y install python
+	sudo apt --fix-broken install # install with all deps
+
 chrome:
 	echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
 	wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 	sudo apt update
 	sudo apt -y install google-chrome-stable libappindicator1 libindicator7
 
+communication:
+	sudo apt -y install thunderbird telegram-desktop
+	#skype
+	cd /tmp && wget https://repo.skype.com/latest/skypeforlinux-64.deb && \
+	sudo dpkg -i skypeforlinux-64.deb
+	sudo apt --fix-broken install # install with all deps
+	#slack
+	cd /tmp && wget https://downloads.slack-edge.com/linux_releases/slack-desktop-3.2.1-amd64.deb && \
+	sudo dpkg -i slack-desktop-3.2.1-amd64.deb
+	sudo apt --fix-broken install # install with all deps
+	#bluejeans
+
 tex:
-	sudo apt -y texlive-full latexmk
+	sudo apt -y install texlive-full latexmk
 
 graphics:
 	# gimp
@@ -79,46 +144,12 @@ graphics:
 	sudo add-apt-repository -y ppa:inkscape.dev/stable
 	sudo apt -y install inkscape
 
-
-GSETTINGS_SCHEMA=org.gnome.Terminal.Legacy.Keybindings
-GSETTINGS_PATH=/org/gnome/terminal/legacy/keybindings/
-SCHEMA_PATH=$(GSETTINGS_SCHEMA):$(GSETTINGS_PATH)
-
-feel:
-	# location of buttons in window bars
-	gsettings set org.gnome.desktop.wm.preferences button-layout 'close,maximize,minimize:'  
-	# manipulate windows
-	gsettings set org.gnome.desktop.wm.keybindings move-to-monitor-left "['<Primary><Super>z']"
-	gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Primary><Super>w']"
-	gsettings set org.gnome.desktop.wm.keybindings maximize "['<Primary><Super>q']"
-	gsettings set org.gnome.desktop.wm.keybindings move-to-monitor-right "['<Primary><Super>x']"
-	gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Primary><Super>d', '<Primary><Alt>d', '<Super>d']"
-	gsettings set org.gnome.mutter.keybindings toggle-tiled-left "['<Primary><Super>a']"
-	gsettings set org.gnome.mutter.keybindings toggle-tiled-right "['<Primary><Super>s']"
-	# manipulate terminal tabs
-	gsettings set $(SCHEMA_PATH) prev-tab "'<Shift>Left'"
-	gsettings set $(SCHEMA_PATH) next-tab "'<Shift>Right'"
-	gsettings set $(SCHEMA_PATH) move-tab-left "'<Primary><Shift>Left'"
-	gsettings set $(SCHEMA_PATH) move-tab-right "'<Primary><Shift>Right'"
-	# color of dock indicator
-	gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-running-dots-color "#e8e8ef"
-	gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-running-dots-border-color "#e8e8ef"
-	# dual keyboard layout
-	gsettings set org.gnome.desktop.input-sources mru-sources "[('xkb', 'us'), ('xkb', 'de')]"
-	gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'de')]"
-	@echo Note: some modified gnome settings will only take effect after the next login
-
 looks:
 	sudo apt -y install gnome-tweak-tool
-	sudo apt-get install arc-theme
+	sudo apt -y install arc-theme
 	#cd /tmp && git clone https://github.com/horst3180/arc-icon-theme --depth 1 && cd arc-icon-theme &&\
 	#	./autogen.sh --prefix=/usr && sudo make install
 	sudo add-apt-repository -y ppa:snwh/ppa
 	sudo apt update
 	sudo apt -y install moka-icon-theme
 
-fira:
-	cd /tmp && git clone https://github.com/mozilla/Fira;\
-	sudo mkdir -p /usr/share/fonts/truetype/Fira && sudo cp Fira/ttf/* /usr/share/fonts/truetype/Fira;\
-	sudo mkdir -p /usr/share/fonts/opentype/Fira && sudo cp Fira/otf/* /usr/share/fonts/opentype/Fira;\
-	sudo fc-cache -fv
