@@ -1,0 +1,11 @@
+* Set up Ubuntu 18.04 after fresh install
+
+Last used to set up `thackl@Nakun`;
+
+#+BEGIN_SRC sh
+sudo apt -y install git make;
+git clone https://github.com/thackl/ubuntu-setup;
+cd ubuntu-setup;
+make
+#+END_SRC
+
