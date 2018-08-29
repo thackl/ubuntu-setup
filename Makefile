@@ -112,6 +112,11 @@ R:
 	Rversion=$$(tar -vtf R-latest.tar.gz | grep -om1 'R-.*$$') &&\
 	cd $$Rversion && ./configure --prefix=$(SOFTWARE)/$$Rversion && make && make install
 
+Rlibs:
+	sudo apt -y install libssl-dev libxml2-dev
+	Rscript install-packages.R argparse tidyverse gridExtra testthat tidygraph \
+	ape ggtree maps
+
 python:
 	sudo apt -y install python
 	sudo apt --fix-broken install # install with all deps
