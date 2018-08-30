@@ -89,7 +89,7 @@ feel:
 	@echo Note: some modified gnome settings will only take effect after the next login
 
 tools:
-	sudo apt -y install pv keepassx vlc rename colordiff
+	sudo apt -y install pv keepassx vlc rename colordiff dos2unix
 
 hub:
 	set -e; cd $(SOFTWARE) &&\
