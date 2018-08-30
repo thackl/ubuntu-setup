@@ -105,17 +105,19 @@ perl:
 
 R:
 	# need some headers for manual install
-	sudo apt -y install libreadline-dev zlib1g-dev libbz2-dev liblzma-dev libpcre3-dev libcurl4-openssl-dev gfortran
+	sudo apt -y install libreadline-dev zlib1g-dev libbz2-dev liblzma-dev libpcre3-dev libcurl4-openssl-dev gfortran libcairo2-dev
 	# need to figure out version hidden in "latest"
 	set -e; cd /tmp &&\
 	wget https://cran.r-project.org/src/base/R-latest.tar.gz && tar -xzf R-latest.tar.gz;\
 	Rversion=$$(tar -vtf R-latest.tar.gz | grep -om1 'R-.*$$') &&\
 	cd $$Rversion && ./configure --prefix=$(SOFTWARE)/$$Rversion && make && make install
+	cp .Rprofile ~/.Rprofile
 
 Rlibs:
-	sudo apt -y install libssl-dev libxml2-dev
-	Rscript install-packages.R argparse tidyverse gridExtra testthat tidygraph \
-	ape ggtree maps
+	sudo apt -y install libssl-dev libxml2-dev libudunits2-dev
+	Rscript install-packages.R argparse tidyverse gridExtra testthat tidygraph ggforce \
+	ape ggtree maps devtools
+	Rscript install-github.R "thomasp85/patchwork" "thackl/thacklr"
 
 python:
 	sudo apt -y install python
