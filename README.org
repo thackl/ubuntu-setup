@@ -1,6 +1,24 @@
-* Set up Ubuntu 18.04 after fresh install
 
-Last used to set up `thackl@Nakun`;
+* Set up Ubuntu after fresh install (18.04, 20.04)
+
+** Set up `thackl@Yaxha (2022)
+
+#+BEGIN_SRC 
+mkdir yaxha-setup && cd yaxha-setup
+sudo apt -y install git make;
+git clone https://github.com/thackl/ubuntu-setup;
+cd ubuntu-setup;
+
+make preparations
+make essentials
+make feel
+make zsh (updated for yaxha)
+make archives
+make tuxedo (yaxha-specific)
+
+#+END_SRC
+
+** Set up `thackl@Nakun` (2018)
 
 #+BEGIN_SRC sh
 sudo apt -y install git make;

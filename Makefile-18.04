@@ -1,8 +1,7 @@
-### Makefile --- Ubuntu 20.04 setup
+### Makefile --- Ubuntu 18.04 setup
 
 ## Author: thackl@lim4.de
-## Version: $Id: Makefile,v1.0 2022/02/17 08:53:04 thackl Exp $
-## Adopted for 20.04 and yaxha Install
+## Version: $Id: Makefile,v 0.0 2018/08/24 08:53:04 thackl Exp $
 
 ## based on Dylan Taylor's template
 ## https://github.com/dylanmtaylor/dylan-ubuntu-makefile/blob/master/Makefile
@@ -47,9 +46,6 @@ zsh:
 	sudo apt -y install zsh
 	cd /tmp && git clone https://github.com/thackl/zsh-setup.git &&\
 	cd zsh-setup && ./install.sh
-	@echo "# to change default shell run"
-	@echo chsh -s /bin/zsh
-	@echo "# then log out and in again"
 
 fira:
 	cd /tmp && git clone https://github.com/mozilla/Fira;\
@@ -164,9 +160,3 @@ looks:
 	sudo apt update
 	sudo apt -y install moka-icon-theme
 
-tuxedo:
-	sudo cp tuxedocomputers.list /etc/apt/sources.list.d/.
-	wget -O - https://deb.tuxedocomputers.com/0x54840598.pub.asc | sudo apt-key add -
-	sudo apt-key adv --fingerprint 54840598
-	sudo apt update
-	sudo apt upgrade

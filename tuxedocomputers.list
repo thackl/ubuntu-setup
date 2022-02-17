@@ -1,0 +1,4 @@
+
+deb https://deb.tuxedocomputers.com/ubuntu focal main
+deb https://oibaf.tuxedocomputers.com/ubuntu focal main
+deb https://graphics.tuxedocomputers.com/ubuntu focal main
