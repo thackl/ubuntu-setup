@@ -1,7 +1,26 @@
 
 * Set up Ubuntu after fresh install (18.04, 20.04)
+** Set up thackl@Edzna (22.04 LTS, 2023)
 
-** Set up `thackl@Yaxha (2022)
+#+BEGIN_SRC
+node=$(uname -n | tr '[:upper:]' '[:lower:]')
+echo $node
+git clone https://github.com/thackl/ubuntu-setup $node-setup
+cd $node-setup
+
+make preparations
+make essentials
+make feel
+make zsh
+make archives
+make tools
+make hub
+make perl5lib
+make R
+
+#+END_SRC
+
+** Set up thackl@Yaxha (20.04, 2022)
 
 #+BEGIN_SRC 
 mkdir yaxha-setup && cd yaxha-setup
@@ -12,19 +31,17 @@ cd ubuntu-setup;
 make preparations
 make essentials
 make feel
-make zsh (updated for yaxha)
+make zsh
 make archives
-make tuxedo (yaxha-specific)
 make tools
+make tuxedo # yaxha-specific
 make hub
-
-# haven't dealt with perl5lib yet - might make sense to sync cpan local lib and custom perl5lib/
-
-# R also looks outdated, see later
+make perl5lib
+make R
 
 #+END_SRC
 
-** Set up `thackl@Nakun` (2018)
+** Set up thackl@Nakun (18.04, 2018)
 
 #+BEGIN_SRC sh
 sudo apt -y install git make;
