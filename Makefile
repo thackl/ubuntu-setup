@@ -102,7 +102,7 @@ hub:
 	  grep -oP '"browser_download_url": "\K(.*)(?=")' | grep linux-amd64) &&\
 	wget $$latest && tar -xzf $$(basename $$latest)
 
-perl:
+perl5lib:
 	sudo apt -y install cpanminus
 	cpanm --local-lib=~/perl5 local::lib && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
 	cpanm Log::Log4perl
