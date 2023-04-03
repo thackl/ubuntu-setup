@@ -15,6 +15,12 @@ make feel
 make zsh (updated for yaxha)
 make archives
 make tuxedo (yaxha-specific)
+make tools
+make hub
+
+# haven't dealt with perl5lib yet - might make sense to sync cpan local lib and custom perl5lib/
+
+# R also looks outdated, see later
 
 #+END_SRC
 

@@ -114,14 +114,15 @@ R:
 	set -e; cd /tmp &&\
 	wget https://cran.r-project.org/src/base/R-latest.tar.gz && tar -xzf R-latest.tar.gz;\
 	Rversion=$$(tar -vtf R-latest.tar.gz | grep -om1 'R-.*$$') &&\
-	cd $$Rversion && ./configure --prefix=$(SOFTWARE)/$$Rversion && make && make install
+	cd $$Rversion && ./configure --prefix=$(SOFTWARE)/$$Rversion --enable-R-shlib &&\
+	make && make install # --enable-R-shlib required for rstudio
 	cp .Rprofile ~/.Rprofile
 
 Rlibs:
 	sudo apt -y install libssl-dev libxml2-dev libudunits2-dev
 	Rscript install-packages.R argparse tidyverse gridExtra testthat tidygraph ggforce \
 	ape ggtree maps devtools
-	Rscript install-github.R "thomasp85/patchwork" "thackl/thacklr"
+	Rscript install-github.R "thomasp85/patchwork" "thackl/thacklr" "thackl/gggenomes"
 
 python:
 	sudo apt -y install python
@@ -170,3 +171,5 @@ tuxedo:
 	sudo apt-key adv --fingerprint 54840598
 	sudo apt update
 	sudo apt upgrade
+	sudo apt install tuxedo-control-center
+
