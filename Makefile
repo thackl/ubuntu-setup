@@ -162,36 +162,29 @@ perl5lib:
 	cpanm Log::Log4perl
 
 R:
-	# Build deps for R itself + common "gotchas" on fresh systems when compiling popular packages (tidyverse, sf, etc.)
-	# (This is intentionally a bit broader than minimal.)
+	# Install R from CRAN apt repo (marutter key + cran40)
+	sudo apt update -qq
+	sudo apt -y install --no-install-recommends software-properties-common dirmngr ca-certificates wget
+	# Key fingerprint (for manual verification):
+	# E298A3A825C0D65DFD57CBB651716619E084DAB9
+	wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | \
+	  sudo tee /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc >/dev/null
+	sudo add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $$(lsb_release -cs)-cran40/"
+	sudo apt update -qq
+	sudo apt -y install --no-install-recommends r-base
+
+	# Optional: headers for compiling common CRAN packages from source (recommended)
 	sudo apt -y install \
 		build-essential gfortran \
+		libcurl4-openssl-dev libssl-dev libxml2-dev \
 		libreadline-dev zlib1g-dev libbz2-dev liblzma-dev \
 		libpcre2-dev \
-		libcurl4-openssl-dev libssl-dev \
-		libxml2-dev \
 		libicu-dev \
 		libblas-dev liblapack-dev \
 		libjpeg-dev libpng-dev libtiff-dev \
-		libx11-dev libxt-dev \
-		libcairo2-dev \
+		libcairo2-dev libpango1.0-dev libharfbuzz-dev libfribidi-dev \
 		libfontconfig1-dev libfreetype6-dev \
-		libharfbuzz-dev libfribidi-dev \
-		libpango1.0-dev \
 		pkg-config
-
-	# install latest R from source into $(SOFTWARE)/R-x.y.z
-	set -e; cd /tmp && \
-	rm -rf R-* && \
-	wget -O R-latest.tar.gz https://cran.r-project.org/src/base/R-latest.tar.gz && \
-	Rversion=$$(tar -tzf R-latest.tar.gz | head -n 1 | sed 's:/*$$::') && \
-	tar -xzf R-latest.tar.gz && \
-	cd $$Rversion && \
-	./configure --prefix=$(SOFTWARE)/$$Rversion --enable-R-shlib && \
-	$(MAKE) && sudo $(MAKE) install
-
-	# optional user profile (expects you have a .Rprofile next to this Makefile)
-	@if [ -f .Rprofile ]; then cp .Rprofile ~/.Rprofile; fi
 
 Rlibs:
 	# Additional deps often needed by CRAN packages (keep separate so base R build is not "too huge")
